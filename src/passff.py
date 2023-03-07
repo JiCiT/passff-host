@@ -144,9 +144,9 @@ if __name__ == "__main__":
         tree = _gen_tree(keys)
         outMessage = _print_tree(tree)
     elif receivedMessage[0] == "insert":
-        force = receivedMessage[1]
+        pass_name = receivedMessage[1]
         data = receivedMessage[2]
-        store.set_key(pass_name, data, force=force)
+        store.set_key(pass_name, data)
     elif receivedMessage[0] == "generate":
         pass_name = receivedMessage[1]
         pass_length = receivedMessage[2]
@@ -201,9 +201,9 @@ if __name__ == "__main__":
         outCode = 1
         outError = MSG_NOT_IMPLEMENTED.format('OTP')
     else:
-        key = receivedMessage[0]
-        if key[0] == "/":
-            del key[0] 
+        pass_name = receivedMessage[0]
+        if pass_name[0] == "/":
+            del pass_name[0] 
         
         try:
             data = store.get_key(pass_name)
