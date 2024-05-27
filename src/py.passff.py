@@ -25,7 +25,7 @@ VERSION = "2.0.0"
 ###############################################################################
 GPG_BIN = "C:\\Program Files (x86)\\GnuPG\\bin\\gpg.exe"
 GIT_BIN = None
-STORE_DIR = "C:\\Users\\username\\password-store"
+STORE_DIR = "C:\\Users\\jason\\password-store"
 USE_AGENT = False
 ###############################################################################
 ######################### End preferences section #############################
