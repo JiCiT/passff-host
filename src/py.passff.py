@@ -37,6 +37,7 @@ MSG_PERMISSION_ERROR = 'Nah-ah!'
 MSG_FILE_NOT_FOUND = 'Error: {0} is not in the password store.'
 MSG_RECURSIVE_COPY_MOVE_ERROR = 'Error: Can\'t {0} a directory into itself.'
 MSG_NOT_IMPLEMENTED = 'Error: {0} is not implemented.'
+MSG_UNKNOWN = "We don't know what's happening!"
 
 # Tree Constants
 SPACES = '    '
@@ -55,17 +56,21 @@ store = passpy.Store(
 
 def getMessage():
     """ Read a message from stdin and decode it. """
+    
     rawLength = sys.stdin.buffer.read(4)
-    if len(rawLength) == 0:
-        sys.exit(0)
+#    if len(rawLength) == 0:
+#        sys.exit(0)
     messageLength = struct.unpack('@I', rawLength)[0]
+
     message = sys.stdin.buffer.read(messageLength).decode("utf-8")
+    
     return json.loads(message)
 
 def encodeMessage(messageContent):
     """ Encode a message for transmission, given its content. """
     encodedContent = json.dumps(messageContent)
     encodedLength = struct.pack('@I', len(encodedContent))
+    
     return {'length': encodedLength, 'content': encodedContent}
 
 def sendMessage(encodedMessage):
@@ -153,7 +158,7 @@ def setPassGpgOpts(env, opts_dict):
 if __name__ == "__main__":
     # Read message from standard input
     receivedMessage = getMessage()
-    
+
     outCode = 0
     outMessage = None
     outError = ''
@@ -236,23 +241,22 @@ if __name__ == "__main__":
         outError = MSG_NOT_IMPLEMENTED.format('OTP')
     else:
         pass_name = receivedMessage[0]
+        
         if pass_name[0] == "/":
-            del pass_name[0] 
+            pass_name = pass_name[1:] 
         
         try:
-            data = store.get_key(pass_name)
-        except StoreNotInitialisedError:
-            outError = MSG_STORE_NOT_INITIALISED_ERROR
-            outCode = 1
+            outMessage = store.get_key(pass_name)
         except FileNotFoundError:
             outError = MSG_FILE_NOT_FOUND.format(pass_name)
             outcode = 1
         except PermissionError:
             outError = MSG_PERMISSION_ERROR
             outCode = 1
-
-        outMessage = data
-
+        except:
+            outError = MSG_UNKNOWN
+            outCode = 1
+    
     # Send the message
     sendMessage(
         encodeMessage({
